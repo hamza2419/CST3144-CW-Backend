@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "start": "node server.js" 
+  },
+  "dependencies": {
+    "express": "^4.21.1",
+    "mongodb": "^3.6.3"
+  }
+}
