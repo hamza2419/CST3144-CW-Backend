@@ -1,8 +1,6 @@
 const express = require('express');
 const path = require('path');
 
-const products = require('./Products');
-
 const app = express();
 
 app.use(express.json());
@@ -31,6 +29,18 @@ app.get('/', (req, res, next) => {
 });
 
 app.get('./Products', (req, res) => {
+    const Products = [
+        {topic: 'Martial Arts', location: 'Alabama', price: '40', space: '5'},
+        {topic: 'Sports', location: 'Nevada', price: '40', space: '5'},
+        {topic: 'Culinary Arts', location: 'Alabama', price: '35', space: '5'},
+        {topic: 'Drama and Theatre', location: 'Arizona', price: '30', space: '5'},
+        {topic: 'Digital Imaging', location: 'California', price: '50', space: '5'},
+        {topic: 'Dance Fusion', location: 'Nevada', price: '25', space: '5'},
+        {topic: 'Technology Workshop', location: 'California', price: '45', space: '5'},
+        {topic: 'Book Club', location: 'Arizona', price: '20', space: '5'},
+        {topic: 'Fashion Designing', location: 'Nevada', price: '35', space: '5'},
+        {topic: 'Public Speaking', location: 'Alabama', price: '25', space: '5'}
+    ];
     res.json(Products);
 });
 
