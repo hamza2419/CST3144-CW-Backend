@@ -34,3 +34,11 @@ app.get('./Products', (req, res) => {
     res.json(Products);
 });
 
+app.post('./order', (req, res) => {
+    const order = req.body;
+
+    console.log('Order Received:', order);
+
+    res.status(201).send({ message: 'Order Received Successfully!'});
+});
+
