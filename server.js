@@ -37,13 +37,7 @@ MongoClient.connect(mongoUri, { useUnifiedTopology: true })
         console.error('Error connecting to MongoDB:', err);
     });
 
-// Serve frontend files
-app.use(express.static(path.join(__dirname, '../frontend')));
 
-// Serve the homepage
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend', 'AfterSchoolActivities.html'));
-});
 
 // Serve products data from MongoDB
 app.get('/Products', async (req, res) => {
