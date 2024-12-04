@@ -1,0 +1,39 @@
+{
+	"info": {
+		"_postman_id": "285337ca-9ac6-46fe-ab80-85904924353f",
+		"name": "api tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39679875"
+	},
+	"item": [
+		{
+			"name": "https://cst3144-cw-backend-eawc.onrender.com/order",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\": \"John\",\r\n    \"lastName\": \"Dwayne\",\r\n    \"phone\": \"1234567890\",\r\n    \"state\": \"CA\",\r\n    \"isGift\": true,\r\n    \"cart\": [\r\n        { \"id\": 1, \"title\": \"Product A\", \"price\": 10, \"quantity\": 2 }\r\n    ]\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://cst3144-cw-backend-eawc.onrender.com/order",
+					"protocol": "https",
+					"host": [
+						"cst3144-cw-backend-eawc",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"order"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
