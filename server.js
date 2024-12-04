@@ -54,21 +54,22 @@ app.get('/products', async (req, res) => {
 app.post('/order', async (req, res) => {
     const order = req.body;
 
-    // Log the incoming order request
     console.log('Received Order:', order);
 
-    // Validate the order fields
+    // Validate required fields
     if (!order.firstName || !order.lastName || !order.cart || !order.cart.length) {
-        console.error('Invalid order data:', order);
         return res.status(400).send({ message: 'Invalid order data' });
     }
 
-    try {
-        // Save the order to the MongoDB collection
-        await db.collection('orders').insertOne(order);
-        console.log('Order Saved Successfully:', order);
+    // Ensure `isGift` is defined
+    if (typeof order.isGift === 'undefined') {
+        order.isGift = false;
+    }
 
-        // Respond with a success message
+    try {
+        // Save the order to MongoDB
+        await db.collection('orders').insertOne(order);
+        console.log('Order Saved:', order);
         res.status(201).send({ message: 'Order Received Successfully!' });
     } catch (err) {
         console.error('Error saving order to MongoDB:', err);
