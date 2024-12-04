@@ -1,59 +1,83 @@
 const express = require('express');
 const path = require('path');
+const { MongoClient } = require('mongodb');
 
 const app = express();
-
-app.use(express.json());
+app.use(express.json()); // Parse JSON request bodies
 app.set('port', 3000);
 
+// **Logging Middleware - Place It Here**
 app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS, POST, PUT');
-    res.setHeader('Access-Control-Allow-Headers', 'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers');
+    console.log(`Request received: ${req.method} ${req.url}`);
     next();
 });
 
-const MongoClient = require('mongodb').MongoClient;
+// Middleware for CORS
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader(
+        'Access-Control-Allow-Headers',
+        'Origin, Accept, Content-Type, X-Requested-With, Access-Control-Allow-Headers'
+    );
+    next();
+});
 
+// MongoDB connection
+const mongoUri = 'mongodb+srv://hamzaakhan24:mdx986868@cst3144.sq6yv.mongodb.net/';
 let db;
-MongoClient.connect('mongodb+srv://hamzaakhan24:mdx986868@cst3144.sq6yv.mongodb.net/', (err, client) => {
-    db = client.db('webstore');
+
+MongoClient.connect(mongoUri, { useUnifiedTopology: true })
+    .then(client => {
+        db = client.db('webstore');
+        console.log('Connected to MongoDB');
+    })
+    .catch(err => {
+        console.error('Error connecting to MongoDB:', err);
+    });
+
+// Serve frontend files
+app.use(express.static(path.join(__dirname, '../frontend')));
+
+// Serve the homepage
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend', 'AfterSchoolActivities.html'));
 });
 
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.get('/', (req, res, next) => {
-    res.sendFile(path.join(__dirname, 'public', 'AfterSchoolActivities.html'));
-
+// Serve products data from MongoDB
+app.get('/Products', async (req, res) => {
+    try {
+        const products = await db.collection('products').find().toArray();
+        res.json(products);
+    } catch (err) {
+        console.error('Error fetching products:', err);
+        res.status(500).send({ message: 'Error fetching products' });
+    }
 });
 
-app.get('./Products', (req, res) => {
-    const Products = [
-        {topic: 'Martial Arts', location: 'Alabama', price: '40', space: '5'},
-        {topic: 'Sports', location: 'Nevada', price: '40', space: '5'},
-        {topic: 'Culinary Arts', location: 'Alabama', price: '35', space: '5'},
-        {topic: 'Drama and Theatre', location: 'Arizona', price: '30', space: '5'},
-        {topic: 'Digital Imaging', location: 'California', price: '50', space: '5'},
-        {topic: 'Dance Fusion', location: 'Nevada', price: '25', space: '5'},
-        {topic: 'Technology Workshop', location: 'California', price: '45', space: '5'},
-        {topic: 'Book Club', location: 'Arizona', price: '20', space: '5'},
-        {topic: 'Fashion Designing', location: 'Nevada', price: '35', space: '5'},
-        {topic: 'Public Speaking', location: 'Alabama', price: '25', space: '5'}
-    ];
-    res.json(Products);
-});
-
-app.post('./order', (req, res) => {
+// Handle order submission
+app.post('/order', async (req, res) => {
     const order = req.body;
 
-    console.log('Order Received:', order);
+    console.log('Received Order:', order); // Log the received order
 
-    res.status(201).send({ message: 'Order Received Successfully!'});
+    if (!order.firstName || !order.lastName || !order.cart || !order.cart.length) {
+        return res.status(400).send({ message: 'Invalid order data' });
+    }
+
+    try {
+        await db.collection('orders').insertOne(order);
+        console.log('Order Saved:', order);
+        res.status(201).send({ message: 'Order Received Successfully!' });
+    } catch (err) {
+        console.error('Error saving order:', err);
+        res.status(500).send({ message: 'Failed to save order' });
+    }
 });
 
+// Start the server
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
-
