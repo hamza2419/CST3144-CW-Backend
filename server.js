@@ -40,7 +40,7 @@ MongoClient.connect(mongoUri, { useUnifiedTopology: true })
 
 
 // Serve products data from MongoDB
-app.get('/Products', async (req, res) => {
+app.get('/products', async (req, res) => {
     try {
         const products = await db.collection('products').find().toArray();
         res.json(products);
