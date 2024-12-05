@@ -90,7 +90,7 @@ app.put('/products/:id', (req, res, next) => {
 
     // Validate spaces: ensure it's a non-negative number
     if (typeof availableInventory !== 'number' || availableInventory < 0) {
-        return res.status(400).send({ msg: 'Invalid spaces value' });
+        return res.status(400).send({ msg: 'Invalid availableInventory value' });
     }
 
     db.collection('products').updateOne(
