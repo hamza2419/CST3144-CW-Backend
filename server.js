@@ -86,20 +86,29 @@ app.post('/order', async (req, res) => {
 });
 
 app.put('/products/:id', (req, res, next) => {
-    const availableInventory = req.body.availableInventory; // Extract spaces from the request body
+    const availableInventory = req.body.availableInventory;
 
-    // Validate spaces: ensure it's a non-negative number
+    // **Add: Validate `availableInventory`: Ensure it's a non-negative number**
     if (typeof availableInventory !== 'number' || availableInventory < 0) {
         return res.status(400).send({ msg: 'Invalid availableInventory value' });
     }
 
+    // **Add: Validate `id`: Ensure it's a valid ObjectId**
+    const productId = req.params.id;
+    if (!ObjectId.isValid(productId)) { // <-- Added validation for ID format
+        return res.status(400).send({ msg: 'Invalid product ID format' });
+    }
+
     db.collection('products').updateOne(
-        { _id: new ObjectId(req.params.id) }, // Match by product ID
-        { $set: { availableInventory } },                // Update the spaces field
+        { _id: new ObjectId(productId) }, // <-- Highlight: ObjectId conversion
+        { $set: { availableInventory } },                
         { safe: true, multi: false },
         (err, result) => {
-            if (err) return next(err);
-            res.send(result.modifiedCount === 1 ? { msg: 'success' } : { msg: 'error' });
+            if (err) {
+                console.error('Error updating product:', err); // <-- Add error logging
+                return next(err); // <-- Add error handling
+            }
+            res.send(result.modifiedCount === 1 ? { msg: 'success' } : { msg: 'No product updated' }); // <-- Clarified response
         }
     );
 });
