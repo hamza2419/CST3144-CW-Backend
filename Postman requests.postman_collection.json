@@ -1,0 +1,59 @@
+{
+	"info": {
+		"_postman_id": "c255a6ff-6e87-4042-8aa7-c964a74e2044",
+		"name": "Postman requests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39679875"
+	},
+	"item": [
+		{
+			"name": "https://cst3144-cw-backend-eawc.onrender.com/products",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://cst3144-cw-backend-eawc.onrender.com/products",
+					"protocol": "https",
+					"host": [
+						"cst3144-cw-backend-eawc",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://cst3144-cw-backend-eawc.onrender.com/order",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\": \"Jane\",\r\n    \"lastName\": \"Smith\",\r\n    \"phone\": \"9876543210\",\r\n    \"state\": \"AR\",\r\n    \"isGift\": true,\r\n    \"cart\": [\r\n        {\r\n            \"id\": \"6750c74c474abbbead2acdcc\",\r\n            \"title\": \"Fashion Designing\",\r\n            \"price\": 35,\r\n            \"quantity\": 2\r\n        }\r\n    ]\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://cst3144-cw-backend-eawc.onrender.com/order",
+					"protocol": "https",
+					"host": [
+						"cst3144-cw-backend-eawc",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"order"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
