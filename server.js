@@ -86,16 +86,16 @@ app.post('/order', async (req, res) => {
 });
 
 app.put('/products/:id', (req, res, next) => {
-    const spaces = req.body.spaces; // Extract spaces from the request body
+    const availableInventory = req.body.availableInventory; // Extract spaces from the request body
 
     // Validate spaces: ensure it's a non-negative number
-    if (typeof spaces !== 'number' || spaces < 0) {
+    if (typeof availableInventory !== 'number' || availableInventory < 0) {
         return res.status(400).send({ msg: 'Invalid spaces value' });
     }
 
     db.collection('products').updateOne(
         { _id: new ObjectId(req.params.id) }, // Match by product ID
-        { $set: { spaces } },                // Update the spaces field
+        { $set: { availableInventory } },                // Update the spaces field
         { safe: true, multi: false },
         (err, result) => {
             if (err) return next(err);
