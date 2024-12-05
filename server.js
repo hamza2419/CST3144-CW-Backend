@@ -24,6 +24,14 @@ app.use((req, res, next) => {
     next();
 });
 
+//static middleware for the images
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
+//middleware for missing images
+app.use('/images', (req, res) => {
+    res.status(404).json({ error: 'Image file does not exist' });
+});
+
 // MongoDB connection
 const mongoUri = 'mongodb+srv://hamzaakhan24:mdx986868@cst3144.sq6yv.mongodb.net/';
 let db;
