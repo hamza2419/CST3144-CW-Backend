@@ -28,7 +28,7 @@ app.use((req, res, next) => {
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
 //middleware for missing images
-app.use('/images', (req, res) => {
+app.use('/images*', (req, res) => {
     res.status(404).json({ error: 'Image file does not exist' });
 });
 
