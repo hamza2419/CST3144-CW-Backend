@@ -1,12 +1,12 @@
 const express = require('express');
 const path = require('path');
-const { MongoClient, ObjectId } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb'); // to ensure they work with mongo db
 
 const app = express();
 app.use(express.json()); // Parse JSON request bodies
-app.set('port', 3000);
+app.set('port', 3000); // server port
 
-// **Logging Middleware - Place It Here**
+// Logging Middleware 
 app.use((req, res, next) => {
     console.log(`Request received: ${req.method} ${req.url}`);
     next();
@@ -14,9 +14,9 @@ app.use((req, res, next) => {
 
 // Middleware for CORS
 app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Origin', '*'); // allows all origina
     res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); // allowed https methods
     res.setHeader(
         'Access-Control-Allow-Headers',
         'Origin, Accept, Content-Type, X-Requested-With, Access-Control-Allow-Headers'
@@ -36,7 +36,7 @@ app.use('/images*', (req, res) => {
 const mongoUri = 'mongodb+srv://hamzaakhan24:mdx986868@cst3144.sq6yv.mongodb.net/';
 let db;
 
-MongoClient.connect(mongoUri, { useUnifiedTopology: true })
+MongoClient.connect(mongoUri, { useUnifiedTopology: true }) // connect to mongodb atlas
     .then(client => {
         db = client.db('webstore');
         console.log('Connected to MongoDB');
@@ -47,10 +47,10 @@ MongoClient.connect(mongoUri, { useUnifiedTopology: true })
 
     //search functionality
     app.get('/search', async (req, res) => { // <-- NEW ROUTE
-        const query = req.query.q; // Get the search query from the request parameters
+        const query = req.query.q; // search query from the request parameters
     
         if (!query) {
-            return res.status(400).json({ msg: 'Search query is required' });
+            return res.status(400).json({ msg: 'Search query is required' }); // validate search queries
         }
     
         try {
@@ -64,17 +64,17 @@ MongoClient.connect(mongoUri, { useUnifiedTopology: true })
     
             res.json(results); // Return filtered results
         } catch (err) {
-            console.error('Error during search:', err);
+            console.error('Error during search:', err); // log errors
             res.status(500).send({ msg: 'Error performing search' });
         }
     });
 
 
 
-// Serve products data from MongoDB
+// get all products
 app.get('/products', async (req, res) => {
     try {
-        const products = await db.collection('products').find().toArray();
+        const products = await db.collection('products').find().toArray(); // fetch all products
         res.json(products);
     } catch (err) {
         console.error('Error fetching products:', err);
@@ -82,11 +82,11 @@ app.get('/products', async (req, res) => {
     }
 });
 
-// Handle order submission
+// Handling order submission
 app.post('/order', async (req, res) => {
     const order = req.body;
 
-    console.log('Received Order:', order);
+    console.log('Received Order:', order); // log receive order
 
     // Validate required fields
     if (!order.firstName || !order.lastName || !order.cart || !order.cart.length) {
@@ -99,38 +99,38 @@ app.post('/order', async (req, res) => {
     }
 
     try {
-        // Save the order to MongoDB
+        // Save order to MongoDB
         await db.collection('orders').insertOne(order);
         console.log('Order Saved:', order);
         res.status(201).send({ message: 'Order Received Successfully!' });
     } catch (err) {
-        console.error('Error saving order to MongoDB:', err);
+        console.error('Error saving order to MongoDB:', err); //log errors
         res.status(500).send({ message: 'Failed to save order' });
     }
 });
 
-app.put('/products/:id', (req, res, next) => {
-    const availableInventory = req.body.availableInventory;
+app.put('/products/:id', (req, res, next) => { // update products availability
+    const availableInventory = req.body.availableInventory; // update inventory value
 
-    // **Add: Validate `availableInventory`: Ensure it's a non-negative number**
+    // Validate `availableInventory`: must be a non-negative number**
     if (typeof availableInventory !== 'number' || availableInventory < 0) {
         return res.status(400).send({ msg: 'Invalid availableInventory value' });
     }
 
-    // **Add: Validate `id`: Ensure it's a valid ObjectId**
+    // Validate `id`: must a valid ObjectId**
     const productId = req.params.id;
     if (!ObjectId.isValid(productId)) { // <-- Added validation for ID format
         return res.status(400).send({ msg: 'Invalid product ID format' });
     }
-
+    // update products availability in mongodb
     db.collection('products').updateOne(
-        { _id: new ObjectId(productId) }, // <-- Highlight: ObjectId conversion
-        { $set: { availableInventory } },                
+        { _id: new ObjectId(productId) }, // match by product id
+        { $set: { availableInventory } }, // updates availableInventory field               
         { safe: true, multi: false },
         (err, result) => {
             if (err) {
-                console.error('Error updating product:', err); // <-- Add error logging
-                return next(err); // <-- Add error handling
+                console.error('Error updating product:', err); //error logging
+                return next(err); // error handling
             }
             res.send(result.modifiedCount === 1 ? { msg: 'success' } : { msg: 'No product updated' }); // <-- Clarified response
         }
@@ -138,8 +138,8 @@ app.put('/products/:id', (req, res, next) => {
 });
 
 
-// Start the server
+// Start server
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+    console.log(`Server running on port ${port}`); // server startup
 });
