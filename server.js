@@ -45,6 +45,30 @@ MongoClient.connect(mongoUri, { useUnifiedTopology: true })
         console.error('Error connecting to MongoDB:', err);
     });
 
+    //search functionality
+    app.get('/search', async (req, res) => { // <-- NEW ROUTE
+        const query = req.query.q; // Get the search query from the request parameters
+    
+        if (!query) {
+            return res.status(400).json({ msg: 'Search query is required' });
+        }
+    
+        try {
+            const results = await db.collection('products').find({
+                $or: [
+                    { title: { $regex: query, $options: 'i' } }, // Case-insensitive match for `title`
+                    { description: { $regex: query, $options: 'i' } }, // Case-insensitive match for `description`
+                    { Location: { $regex: query, $options: 'i' } } // Case-insensitive match for `Location`
+                ]
+            }).toArray();
+    
+            res.json(results); // Return filtered results
+        } catch (err) {
+            console.error('Error during search:', err);
+            res.status(500).send({ msg: 'Error performing search' });
+        }
+    });
+
 
 
 // Serve products data from MongoDB
