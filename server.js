@@ -113,11 +113,11 @@ app.post('/order', async (req, res) => {
         
         await Promise.all(updatePromises);
         console.log('Inventory Updated for Order');
-        
+
         res.status(201).send({ message: 'Order Received Successfully!' });
     } catch (err) {
-        console.error('Error saving order to MongoDB:', err); //log errors
-        res.status(500).send({ message: 'Failed to save order' });
+        console.error('Error saving order or updating inventory:', err); //log errors
+        res.status(500).send({ message: 'Failed to save order or update inventory' });
     }
 });
 
