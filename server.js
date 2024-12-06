@@ -102,6 +102,14 @@ app.post('/order', async (req, res) => {
         // Save order to MongoDB
         await db.collection('orders').insertOne(order);
         console.log('Order Saved:', order);
+
+        //update inventory for each product in mongo db
+        const updatePromises = order.cart.map(item =>
+            db.collection('products').updateOne(
+                {_id: new ObjectId(item.id) },
+                { $inc: { availableInventory: -item.quantity} }
+            )
+        );        
         res.status(201).send({ message: 'Order Received Successfully!' });
     } catch (err) {
         console.error('Error saving order to MongoDB:', err); //log errors
