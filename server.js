@@ -109,7 +109,11 @@ app.post('/order', async (req, res) => {
                 {_id: new ObjectId(item.id) },
                 { $inc: { availableInventory: -item.quantity} }
             )
-        );        
+        );  
+        
+        await Promise.all(updatePromises);
+        console.log('Inventory Updated for Order');
+        
         res.status(201).send({ message: 'Order Received Successfully!' });
     } catch (err) {
         console.error('Error saving order to MongoDB:', err); //log errors
